@@ -1,0 +1,3 @@
+# spreadpit
+Just a little commandline tool to help cleaning up a spreadsheet file (*.ods) containing a list of french vocabulary I want to learn.
+Maybe not useful for anyone else but you never know...
