@@ -56,9 +56,7 @@ publishing {
 	publications {
 		clubdynamicImporterPersonsSwimmingJar(MavenPublication) {
 			from components.java
-
 			artifact sourceJar { classifier "sources" }
-
 			groupId project.groupId
 			artifactId project.artifactId
 			version project.version
