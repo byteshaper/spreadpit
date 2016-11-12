@@ -18,9 +18,9 @@ public class FileParser {
 		
 		for(int rowIdx = 1; rowIdx <= sheet.getRowCount(); rowIdx++) {
 		    Word word = new Word(rowIdx);
-		    word.setFirstColumn(sheet.getCellByPosition("A" + rowIdx).getStringValue());
-		    word.setSecondColumn(sheet.getCellByPosition("B" + rowIdx).getStringValue());
-		    word.setThirdColumn(sheet.getCellByPosition("C" + rowIdx).getStringValue());
+		    word.setFirstColumn(sheet.getCellByPosition("A" + rowIdx).getStringValue().trim());
+		    word.setSecondColumn(sheet.getCellByPosition("B" + rowIdx).getStringValue().trim());
+		    word.setThirdColumn(sheet.getCellByPosition("C" + rowIdx).getStringValue().trim());
 		    words.add(word);
 		}
 		
