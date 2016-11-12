@@ -1,6 +1,6 @@
 package com.byteshaper.spreadpit;
 
-public class Word {
+public class Row {
 	
 	private final int lineNumber;
 	
@@ -10,7 +10,7 @@ public class Word {
 	
 	private String thirdColumn;
 	
-	public Word(int lineNumber) {
+	public Row(int lineNumber) {
 		this.lineNumber = lineNumber;
 	}
 
@@ -58,7 +58,7 @@ public class Word {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Word other = (Word) obj;
+		Row other = (Row) obj;
 		if (lineNumber != other.lineNumber)
 			return false;
 		return true;

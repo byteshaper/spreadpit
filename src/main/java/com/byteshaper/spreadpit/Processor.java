@@ -1,15 +1,26 @@
 package com.byteshaper.spreadpit;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Processor {
 
-    public static void main(String[] args) throws Exception {
-        List<Word> words = FileParser.readWords();
-        Map<String, Word> byFrench = new HashMap<>();
-        Map<String, Word> byGerman = new HashMap<>();
+	public static void main(String[] args) throws Exception {
+		List<Row> processedWords = processRows();
+	}
+	
+    public static List<Row> processRows() throws Exception {
+    	List<Row> processedRows = new ArrayList<>();
+        List<Row> rows = FileParser.readWords();
+        Map<String, Row> byFrench = new HashMap<>();
+        Map<String, Row> byGerman = new HashMap<>();
         int frenchDuplicateCount = 0;
         int germanDuplicateCount = 0;
         int bothDuplicateCount = 0;
@@ -18,8 +29,29 @@ public class Processor {
         
         System.out.println("Starting analyze:");
         
-        for(Word w: words) {
+        for(Row row: rows) {
         	
+        	Optional<Row> frenchDup = processedRows.stream()
+        		.filter(w -> w.getFirstColumn().equals(row.getFirstColumn()))
+        		.findFirst();
+        	
+        	Optional<Row> germanDup = processedRows.stream()
+            		.filter(w -> w.getSecondColumn().equals(row.getSecondColumn()))
+            		.findFirst();
+        	
+        	if(frenchDup.isPresent() && !germanDup.isPresent()) {
+        		System.out.println("Dup line: " + frenchDup.get().getLineNumber());
+        		System.out.println(parseMeanings(frenchDup.get().getSecondColumn()));
+        		System.out.println("Row line:  " + row.getLineNumber());
+        		System.out.println(parseMeanings(row.getSecondColumn()));
+        	} else if(germanDup.isPresent() && !frenchDup.isPresent()) {
+        		
+        	} else if(!frenchDup.isPresent() && !germanDup.isPresent()) {
+        		processedRows.add(row);
+        	}
+        		
+        	
+        	/*
         	if(byFrench.containsKey(w.getFirstColumn())) {
         		if(byGerman.containsKey(w.getSecondColumn())) {
         			printBothDuplicate(w);
@@ -49,6 +81,7 @@ public class Processor {
         		germanEmptyCount++;
         		System.out.println("German empty: " + w.getFirstColumn() + " / line: " + w.getLineNumber());
         	} 
+        */	
         }
         
         System.out.println("French duplicates: " + frenchDuplicateCount);
@@ -56,20 +89,27 @@ public class Processor {
         System.out.println("Both   duplicates: " + bothDuplicateCount);
         System.out.println("French empty: " + frenchEmptyCount);
         System.out.println("German empty: " + germanEmptyCount);
+        return processedRows;
         
     }
     
-    private static void printFrenchDuplicate(Word w0, Word w1) {
+    private static Set<Meaning> parseMeanings(String cellContent) {
+    	Set<Meaning> meanings = new HashSet<>();
+    	Arrays.stream(cellContent.split(";")).forEach(s -> meanings.add(Meaning.create(s)));	
+    	return meanings;
+    }
+    
+    private static void printFrenchDuplicate(Row w0, Row w1) {
     	System.out.println("Found french duplicate: " + w0.getFirstColumn() + ": " + w0.getSecondColumn() + " // "
 				+ w1.getSecondColumn());
     }
     
-    private static void printGermanDuplicate(Word w0, Word w1) {
+    private static void printGermanDuplicate(Row w0, Row w1) {
     	System.out.println("Found german duplicate: " + w0.getSecondColumn() + ": " + w0.getFirstColumn() + " // "
 				+ w1.getFirstColumn());
     }
     
-    private static void printBothDuplicate(Word w) {
+    private static void printBothDuplicate(Row w) {
     	System.out.println("Found both duplicate: " + w.getFirstColumn() + ": " + w.getSecondColumn());
     }
 
