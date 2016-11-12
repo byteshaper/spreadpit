@@ -3,12 +3,9 @@ package com.byteshaper.spreadpit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class Processor {
 
@@ -40,10 +37,20 @@ public class Processor {
             		.findFirst();
         	
         	if(frenchDup.isPresent() && !germanDup.isPresent()) {
-        		System.out.println("Dup line: " + frenchDup.get().getLineNumber());
-        		System.out.println(parseMeanings(frenchDup.get().getSecondColumn()));
-        		System.out.println("Row line:  " + row.getLineNumber());
-        		System.out.println(parseMeanings(row.getSecondColumn()));
+        		List<Meaning> germanMeanings0 = parseMeanings(frenchDup.get().getSecondColumn());
+        		List<Meaning> germanMeanings1 = parseMeanings(row.getSecondColumn());
+        		System.out.println("German meanings 0: " + germanMeanings0);
+        		System.out.println("German meanings 1: " + germanMeanings1);
+        		System.out.println("Merged: " + Meaning.mergeMeanings(germanMeanings0, germanMeanings1));
+        		
+        		/**
+        		 * TODO works in many cases but not here: 
+        		 * German meanings 0: [{{[aufgeben]}}]
+				   German meanings 1: [{{[Arbeit, Widerstand, Hoffnung), aufgeben (Studium]}}]
+				   Merged: [{{[Arbeit, Widerstand, Hoffnung), aufgeben (Studium]}}, {{[aufgeben]}}]
+        		 * 
+        		 */
+        		
         	} else if(germanDup.isPresent() && !frenchDup.isPresent()) {
         		
         	} else if(!frenchDup.isPresent() && !germanDup.isPresent()) {
@@ -93,8 +100,8 @@ public class Processor {
         
     }
     
-    private static Set<Meaning> parseMeanings(String cellContent) {
-    	Set<Meaning> meanings = new HashSet<>();
+    private static List<Meaning> parseMeanings(String cellContent) {
+    	List<Meaning> meanings = new ArrayList<>();
     	Arrays.stream(cellContent.split(";")).forEach(s -> meanings.add(Meaning.create(s)));	
     	return meanings;
     }
