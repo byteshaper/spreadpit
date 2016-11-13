@@ -5,15 +5,15 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class Meaning {
 	
+	private static final List<Character> BRACKET_OPEN_CHARS = Arrays.asList('{', '[', '(');
+	
+	private static final List<Character> BRACKET_CLOSE_CHARS = Arrays.asList('}', ']', ')');
+	
 	public static Meaning create(String commaSeparatedWords) {
-		return new Meaning(Arrays
-				.stream(commaSeparatedWords.split(","))
-				.map(w -> w.trim())
-				.collect(Collectors.toSet()));
+		return new Meaning(stringToWords(commaSeparatedWords));
 	}
 	
 	public static Set<Meaning> mergeMeanings(List<Meaning> meanings0, List<Meaning>meanings1) {
@@ -100,5 +100,28 @@ public class Meaning {
 		return true;
 	}
 	
-	
+	private static Set<String> stringToWords(String commaseparatedWords) {
+		Set<String> words = new HashSet<>();
+		char[] characters = commaseparatedWords.toCharArray();
+		boolean bracketOpen = false;
+		StringBuilder word = new StringBuilder();
+		
+		for(char character: characters) {
+			if(BRACKET_OPEN_CHARS.contains(character)) {
+				bracketOpen = true;
+			} else if(BRACKET_CLOSE_CHARS.contains(character)) {
+				bracketOpen = false;
+			}
+			
+			if(character == ',' && !bracketOpen) {
+				words.add(word.toString().trim());
+				word = new StringBuilder();
+			} else {
+				word.append(character);
+			}
+		}
+		
+		words.add(word.toString().trim());
+		return words;
+	}
 }
