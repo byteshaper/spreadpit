@@ -1,9 +1,12 @@
 package com.byteshaper.spreadpit;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 public class Meaning {
@@ -17,33 +20,18 @@ public class Meaning {
 	}
 	
 	public static Set<Meaning> mergeMeanings(List<Meaning> meanings0, List<Meaning>meanings1) {
+		List<Meaning> allMeanings = new ArrayList<>(meanings0);
+		allMeanings.addAll(meanings1);
 		Set<Meaning> resultSet = new LinkedHashSet<>();
-		Set<Meaning> added = new HashSet<>();
 		
-		for(Meaning m0: meanings0) {
-			for(Meaning m1: meanings1) {
-				if(m0.hasSomethingInCommonWith(m1)) {
-					resultSet.add(m0.createMergedInstance(m1));
-					added.add(m0);
-					added.add(m1);
-				} else if(!added.contains(m1)) {
-					resultSet.add(m1);
-					added.add(m1);
-				}
-			}
+		for(Meaning meaning: allMeanings) {
+			Optional<Meaning> related = resultSet.stream().filter(m -> m.hasSomethingInCommonWith(meaning)).findAny();
 			
-			if(!added.contains(m0)) {
-				for(Meaning result: resultSet) {
-					if(result.hasSomethingInCommonWith(m0)) {
-						resultSet.add(result.createMergedInstance(m0));
-						added.add(m0);
-					} 
-				}
-				
-				if(!added.contains(m0)) { 
-					resultSet.add(m0);
-					added.add(m0);
-				}
+			if(related.isPresent()) {
+				resultSet.remove(related.get());
+				resultSet.add(related.get().createMergedInstance(meaning));
+			} else {
+				resultSet.add(meaning);
 			}
 		}
 		
