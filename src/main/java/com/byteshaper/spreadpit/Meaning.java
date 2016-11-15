@@ -65,7 +65,7 @@ public class Meaning {
 	}
 	
 	public Meaning createMergedInstance (Meaning other) {
-		HashSet<String> words = new HashSet<>(this.words);
+		HashSet<String> words = new LinkedHashSet<>(this.words);
 		words.addAll(other.getWords());
 		return new Meaning(words);
 	}
@@ -101,7 +101,7 @@ public class Meaning {
 	}
 	
 	private static Set<String> stringToWords(String commaseparatedWords) {
-		Set<String> words = new HashSet<>();
+		Set<String> words = new LinkedHashSet<>();
 		char[] characters = commaseparatedWords.toCharArray();
 		boolean bracketOpen = false;
 		StringBuilder word = new StringBuilder();

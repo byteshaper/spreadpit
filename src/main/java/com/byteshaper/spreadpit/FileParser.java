@@ -11,7 +11,7 @@ public class FileParser {
 	
 //    private static final String DOC_PATH = "/home/henning/Dropbox/Französisch/FranzösischVokabelnKopieFürSpreadpit.ods";
     private static final String DOC_PATH = "/home/elhefe/Dropbox/Französisch/FranzösischVokabelnKopieFürSpreadpit.ods";
-	public static List<Row> readWords() throws Exception {
+	public static List<Row> readRows() throws Exception {
 		SpreadsheetDocument doc = SpreadsheetDocument.loadDocument(DOC_PATH); // continue
 		Table sheet = doc.getSheetByIndex(0);
 		List<Row> words = new ArrayList<>();
