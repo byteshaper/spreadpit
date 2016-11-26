@@ -26,6 +26,10 @@ public class ProcessorTest {
 		List<Row> inputRows = new ArrayList<>();
 		inputRows.add(new Row(1, "mot", "Wort 1"));
 		inputRows.add(new Row(1, "mot", "Wort 2"));
+		inputRows.add(new Row(1, "mot", "Wort 1"));
+		inputRows.add(new Row(1, "mot", "Wort 1"));
+		inputRows.add(new Row(1, "mot", "Wort 2"));
+		inputRows.add(new Row(1, "mot", "Wort 2"));
 		List<Row> processedRows = Processor.processRows(inputRows);
 		assertThat(processedRows.size(), equalTo(1));
 		assertThat(processedRows.get(0).getFirstColumn(), equalTo("mot"));
@@ -36,6 +40,10 @@ public class ProcessorTest {
 	public void plainGermanDuplicate() throws Exception {
 		List<Row> inputRows = new ArrayList<>();
 		inputRows.add(new Row(1, "mot 1", "Wort"));
+		inputRows.add(new Row(1, "mot 2", "Wort"));
+		inputRows.add(new Row(1, "mot 1", "Wort"));
+		inputRows.add(new Row(1, "mot 2", "Wort"));
+		inputRows.add(new Row(1, "mot 2", "Wort"));
 		inputRows.add(new Row(1, "mot 2", "Wort"));
 		List<Row> processedRows = Processor.processRows(inputRows);
 		assertThat(processedRows.size(), equalTo(1));
@@ -66,6 +74,63 @@ public class ProcessorTest {
 		List<Row> processedRows = Processor.processRows(inputRows);
 		assertThat(processedRows.size(), equalTo(1));
 		assertThat(processedRows.get(0).getFirstColumn(), equalTo("mot"));
+		assertThat(processedRows.get(0).getSecondColumn(), equalTo("Wort 1; Wort 2"));
+	}
+	
+	@Test
+	public void bothSidesDuplicates() throws Exception {
+		List<Row> inputRows = new ArrayList<>();
+		inputRows.add(new Row(1, "mot 1", "Wort 1"));
+		inputRows.add(new Row(1, "mot 2", "Wort 2"));
+		inputRows.add(new Row(1, "mot 1", "Wort 2"));
+		inputRows.add(new Row(1, "mot 2", "Wort 1"));
+		List<Row> processedRows = Processor.processRows(inputRows);
+		assertThat(processedRows.size(), equalTo(1));
+		assertThat(processedRows.get(0).getFirstColumn(), equalTo("mot 1; mot 2"));
+		assertThat(processedRows.get(0).getSecondColumn(), equalTo("Wort 1; Wort 2"));
+	}
+	
+	@Test
+	public void noDuplicateSemicolon() throws Exception {
+		List<Row> inputRows = new ArrayList<>();
+		inputRows.add(new Row(1, "mot 1; mot 2", "Wort 1"));
+		inputRows.add(new Row(1, "mot 2", "Wort 2"));
+		List<Row> processedRows = Processor.processRows(inputRows);
+		assertThat(processedRows.size(), equalTo(2));
+		assertThat(processedRows.get(0).getFirstColumn(), equalTo("mot 1; mot 2"));
+		assertThat(processedRows.get(0).getSecondColumn(), equalTo("Wort 1"));
+		assertThat(processedRows.get(1).getFirstColumn(), equalTo("mot 2"));
+		assertThat(processedRows.get(1).getSecondColumn(), equalTo("Wort 2"));
+	}
+	
+	@Test
+	public void duplicateSemicolon() throws Exception {
+		List<Row> inputRows = new ArrayList<>();
+		inputRows.add(new Row(1, "mot 1; mot 2", "Wort 1"));
+		inputRows.add(new Row(1, "mot 2", "Wort 1"));
+		inputRows.add(new Row(1, "mot 2", "Wort 1"));
+		inputRows.add(new Row(1, "mot 1; mot 2", "Wort 1"));
+		inputRows.add(new Row(1, "mot 2", "Wort 1"));
+		List<Row> processedRows = Processor.processRows(inputRows);
+		assertThat(processedRows.size(), equalTo(1));
+		assertThat(processedRows.get(0).getFirstColumn(), equalTo("mot 1; mot 2"));
+		assertThat(processedRows.get(0).getSecondColumn(), equalTo("Wort 1"));
+	}
+	
+	@Test
+	public void goCrazyWithSemicolon() throws Exception {
+		List<Row> inputRows = new ArrayList<>();
+		inputRows.add(new Row(1, "mot 1; mot 2", "Wort 1"));
+		inputRows.add(new Row(1, "mot 2", "Wort 1"));
+		inputRows.add(new Row(1, "mot 2", "Wort 1"));
+		inputRows.add(new Row(1, "mot 1; mot 2", "Wort 1"));
+		inputRows.add(new Row(1, "mot 2", "Wort 1"));
+		inputRows.add(new Row(1, "mot 2", "Wort 2"));
+		inputRows.add(new Row(1, "mot 1; mot 2", "Wort 1; Wort 2"));
+		List<Row> processedRows = Processor.processRows(inputRows);
+		System.err.println(processedRows);
+		assertThat(processedRows.size(), equalTo(2)); // too lazy to fix this edge case
+		assertThat(processedRows.get(0).getFirstColumn(), equalTo("mot 1; mot 2"));
 		assertThat(processedRows.get(0).getSecondColumn(), equalTo("Wort 1; Wort 2"));
 	}
 

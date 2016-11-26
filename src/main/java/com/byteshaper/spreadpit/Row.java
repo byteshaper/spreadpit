@@ -76,4 +76,9 @@ public class Row {
 			return false;
 		return true;
 	}
+	
+	@Override
+	public String toString() {
+		return "{{" + firstColumn + " -> " + secondColumn + "}}";
+	}
 }
