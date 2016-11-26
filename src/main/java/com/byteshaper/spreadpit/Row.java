@@ -13,6 +13,19 @@ public class Row {
 	public Row(int lineNumber) {
 		this.lineNumber = lineNumber;
 	}
+	
+	public Row(int lineNumber, String firstColumn, String secondColumn) {
+		this.lineNumber = lineNumber;
+		this.firstColumn = firstColumn;
+		this.secondColumn = secondColumn;
+	}
+	
+	public Row(int lineNumber, String firstColumn, String secondColumn, String thirdColumn) {
+		this.lineNumber = lineNumber;
+		this.firstColumn = firstColumn;
+		this.secondColumn = secondColumn;
+		this.thirdColumn = thirdColumn;
+	}
 
 	public int getLineNumber() {
 		return lineNumber;

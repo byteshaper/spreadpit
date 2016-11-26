@@ -2,12 +2,12 @@ package com.byteshaper.spreadpit;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BinaryOperator;
+import java.util.stream.Collectors;
 
 public class Meaning {
 	
@@ -21,11 +21,19 @@ public class Meaning {
 	
 	public static Set<Meaning> mergeMeanings(List<Meaning> meanings0, List<Meaning>meanings1) {
 		List<Meaning> allMeanings = new ArrayList<>(meanings0);
-		allMeanings.addAll(meanings1);
+		allMeanings.addAll(meanings1);		
+		allMeanings = allMeanings
+				.stream()
+				.sorted((m0, m1) -> m0.words.stream()
+						.reduce(wordsReducer()).orElse("")
+						.compareTo(m1.words.stream().reduce(wordsReducer()).orElse("")) )
+				.collect(Collectors.toList());
+		
 		Set<Meaning> resultSet = new LinkedHashSet<>();
 		
+		
 		for(Meaning meaning: allMeanings) {
-			Optional<Meaning> related = resultSet.stream().filter(m -> m.hasSomethingInCommonWith(meaning)).findAny();
+			Optional<Meaning> related = resultSet.stream().filter(m -> m.hasSomethingInCommonWith(meaning)).findFirst();
 			
 			if(related.isPresent()) {
 				resultSet.remove(related.get());
@@ -36,6 +44,10 @@ public class Meaning {
 		}
 		
 		return resultSet;
+	}
+	
+	private static BinaryOperator<String> wordsReducer() {
+		return (s0, s1) -> s0 + "," + s1;
 	}
 	
 	private Meaning(Set<String> words) {
@@ -53,9 +65,9 @@ public class Meaning {
 	}
 	
 	public Meaning createMergedInstance (Meaning other) {
-		HashSet<String> words = new LinkedHashSet<>(this.words);
-		words.addAll(other.getWords());
-		return new Meaning(words);
+		Set<String> words = new LinkedHashSet<>(other.getWords());
+		words.addAll(this.words);
+		return new Meaning(words.stream().sorted().collect(Collectors.toCollection(() -> new LinkedHashSet<>())));
 	}
 	
 	@Override
