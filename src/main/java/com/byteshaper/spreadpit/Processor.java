@@ -9,7 +9,8 @@ import java.util.Set;
 public class Processor {
 
 	public static void main(String[] args) throws Exception {
-		List<Row> processedWords = processRows(FileParser.readRows());
+		List<Row> processedWords = processRows(FileIO.readRows());
+		FileIO.write(processedWords);
 	}
 	
     public static List<Row> processRows(List<Row> rows) throws Exception {
