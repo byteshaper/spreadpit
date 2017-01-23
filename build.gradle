@@ -42,6 +42,10 @@ test {
 	}
 }
 
+checkstyle {
+  sourceSets = [project.sourceSets.main]
+}
+
 task sourceJar(type: Jar) { from sourceSets.main.allJava }
 
 publishing {
