@@ -42,6 +42,24 @@ test {
 	}
 }
 
+jar {
+    manifest {
+        attributes 'Main-Class': 'com.byteshaper.spreadpit.Processor'
+    }
+}
+
+task fatJar(type: Jar) {
+  manifest {
+        attributes 'Implementation-Title': 'Spreadpit',
+          'Implementation-Version': version,
+          'Main-Class': 'com.byteshaper.spreadpit.Processor'
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    from sourceSets.main.allJava
+    with jar
+}
+
 checkstyle {
   sourceSets = [project.sourceSets.main]
 }
